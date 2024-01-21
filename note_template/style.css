@@ -1,0 +1,114 @@
+.card {
+    font-family: arial;
+    font-size: 20px;
+    text-align: center;
+    color: black;
+    background: #feffe8;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, #fdf6e3 0%, #eee8d5 100%);
+    /* FF3.6-15 		*/
+    background: -webkit-linear-gradient(top, #fdf6e3 0%, #eee8d5 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background-repeat: no-repeat;
+    background-attachment: fixed
+}
+
+@media (max-width:500px) {
+    .backside {
+        text-align: left;
+    }
+
+    .meaning {
+        padding-left: 1em;
+    }
+
+    .meaning:before {
+        content: "- ";
+    }
+}
+
+a.link {
+    font-size: 16px;
+    float: right;
+    opacity: 1.0;
+    font-weight: bold;
+}
+
+.notes {
+    font-family: futura, PT Sans, AvenirNext, sans serif;
+    font-size: 11px;
+    float: left;
+}
+
+.en {
+    color: #3b617a;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'AvenirNext-DemiBold';
+}
+
+.serif {
+    font-family: PT Serif;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.es {
+    color: #3b617a;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'AvenirNext-DemiBold';
+}
+
+.ensentence {
+    font-family: PT Serif;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.essentence {
+    font-family: Courier;
+    font-size: 16px;
+    font-style: italic;
+}
+
+.pronunciation {
+    font-family: PT Serif;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: italic;
+    color: #657b83;
+}
+
+.ipa {
+    font-family: Courier;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: italic;
+    color: #839496;
+}
+
+.cyan {
+    color: #2aa198;
+}
+
+.orange {
+    color: #cb4b16;
+}
+
+.blue {
+    color: #268bd2;
+}
+
+.gray00 {
+    color: #839496;
+}
+
+.gray01 {
+    color: #586e75;
+}
+
+.gray02 {
+    color: #657b83;
+}

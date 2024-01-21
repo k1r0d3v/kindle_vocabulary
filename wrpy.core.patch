@@ -1,0 +1,25 @@
+--- core.orig.py	2024-01-21 14:53:57.858032300 +0100
++++ core.py	2024-01-21 15:10:27.967249800 +0100
+@@ -62,8 +62,22 @@
+             to_lang=self.to_lang,
+             url=url,
+             translations=[],
++            pronunciations=[],
+         )
+ 
++        pronunciations = []    
++        for child in soup.find_all('span', 'pronWidget'):
++            if child.name == 'span':
++                child.find('span').clear()
++                
++                if 'dir' not in child.attrs:                    
++                    pronunciations.append((child.get_text().strip(), []))
++                else:
++                    pronunciations[-1][1].append(child.get_text().strip())
++            else:
++                pronunciations[-1][1].append(child.get_text().strip())
++        translation['pronunciations'] = pronunciations
++
+         for table in soup.find_all('table', 'WRD'):
+             entries = []
+             last_row_class = 'even'  # each row starts with even class (0-index)

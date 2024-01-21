@@ -1,0 +1,6 @@
+.vindex
+env
+__pycache__
+
+*.apkg
+*.csv

@@ -1,0 +1,2 @@
+genanki
+wrpy==0.1.1
