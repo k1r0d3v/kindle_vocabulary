@@ -1,2 +1,3 @@
 genanki
 wrpy==0.1.1
+pip-licenses
