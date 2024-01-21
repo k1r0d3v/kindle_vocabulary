@@ -2,10 +2,10 @@
 ## Description
 
 This is a simple python application that converts then kindle vocabulary database into an anki deck with traductions from word reference in a given languaje.
-
-<img src="images/desktop.png" alt="Desktop" width="500"/>
-<img src="images/android.png" alt="Android" width="200"/>
-
+<p align="center">
+  <img src="images/desktop.png" alt="Desktop" width="500"/>
+  <img src="images/android.png" alt="Android" width="200"/>
+</p>
 
 ## Installation
 
