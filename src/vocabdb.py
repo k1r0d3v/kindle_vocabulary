@@ -1,24 +1,28 @@
 from argparse import Namespace
 from pathlib import Path
 import sqlite3
+from typing import Optional
 
 
 class Vocabdb:
     def __init__(self, db: Path) -> None:
         self.__db_path = db
-        self.__db = None
+        self.__db: Optional[sqlite3.Connection] = None
        
     def open(self):
-        if self.__db is not None:
+        if self.is_open():
             raise ValueError('Database already open')
         
         self.__db = sqlite3.connect(str(self.__db_path))
 
     def close(self):
-        if self.__db is not None:
+        if self.is_open():
             self.__db.close()
             self.__db = None
-       
+
+    def is_open(self):
+        return self.__db is not None
+
     def get_books(self):
         self.__check_db_open()
         
@@ -40,17 +44,18 @@ class Vocabdb:
 
         return books
         
-    def get_lookups(self, book_id: str = None):
+    def get_lookups(self, book_id: Optional[str] = None):
         self.__check_db_open()
         
-        cursor = self.__db.cursor()
+        cursor = self.__db.cursor() # type: ignore
 
         query = 'select * from LOOKUPS l'
 
         if book_id is not None:
-            query += f" where l.book_key = '{book_id}'"
-
-        cursor.execute(query)
+            query += f" where l.book_key = ?"
+            cursor.execute(query, (book_id,))
+        else:
+            cursor.execute(query)
         
         lookups = {}
         for row in cursor.fetchall():
@@ -68,14 +73,14 @@ class Vocabdb:
 
         return lookups
 
-    def get_words(self, book_id: str = None):
+    def get_words(self, book_id: Optional[str] = None):
         self.__check_db_open()
         
-        cursor = self.__db.cursor()
+        cursor = self.__db.cursor() # type: ignore
         if book_id is None:
             cursor.execute(f'select * from WORDS')
         else:
-            cursor.execute(f"select w.id, w.word, w.stem, w.lang, w.category, w.timestamp, w.profileid from LOOKUPS l join WORDS w on l.word_key = w.id where l.book_key = '{book_id}'")
+            cursor.execute(f"select w.id, w.word, w.stem, w.lang, w.category, w.timestamp, w.profileid from LOOKUPS l join WORDS w on l.word_key = w.id where l.book_key = ?", (book_id,))
 
         words = {}
         for row in cursor.fetchall():
@@ -95,7 +100,7 @@ class Vocabdb:
 
 
     def __check_db_open(self):
-        if self.__db is None:
+        if not self.is_open():
             raise ValueError('Open the database before using it')
 
     def __enter__(self):

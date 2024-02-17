@@ -1,14 +1,25 @@
-import genanki
+from typing import Any, Optional, Self
+import genanki # type: ignore
 from pathlib import Path
-from abc import ABC, abstractmethod
+import hashlib
+
 
 class NoteBuilder:
-    def __init__(self, model: genanki.Model) -> None:
-       self.__model = model
-       self.__fields = [field['name'] for field in model.fields]
+    def __init__(self, model_name: str, fields: list[str], templates: list[dict[str, str]], style: str, model_id: Optional[int] = None) -> None:
+        if model_id is None:
+            model_id = int(hashlib.shake_256(model_name.encode(encoding='utf-8')).hexdigest(7), base=16)
+
+        self.__model = genanki.Model(
+            model_id=model_id,
+            name=model_name,
+            fields=[{'name': field } for field in fields],
+            templates=templates,
+            css=style
+        )
+        self.__fields = [field['name'] for field in self.__model.fields]
     
-    def build_field_list_for(self, d: dict):
-        l = [None for _ in range(len(self.__fields))]
+    def build_field_list_for(self, d: dict[str, str]):
+        l: list[Optional[str]] = [None for _ in range(len(self.__fields))]
         for k, v in d.items():
             l[self.__fields.index(k)] = v
 
@@ -22,26 +33,37 @@ class NoteBuilder:
     def model(self) -> genanki.Model:
         return self.__model
 
-    def build(self, note_id: int, values: dict) -> genanki.Note:
-        return genanki.Note(guid=note_id, model=self.model(), fields=self.build_field_list_for(values))
+    def build(self, note: dict) -> genanki.Note:
+        return genanki.Note(guid=note['id'], model=self.model(), fields=self.build_field_list_for(note['values']))
 
-class DeckBuilder(ABC):
-    def __init__(self, deck_id: int, deck_name: str, note_builder: NoteBuilder) -> None:
-        self.__deck_id = deck_id
+
+class DeckBuilder:
+    def __init__(self, deck_name: str, note_builder: NoteBuilder, deck_id: Optional[int] = None, notes: list[dict] = []) -> None:
+        if deck_id is None:
+            self.__deck_id = int(hashlib.shake_256(deck_name.encode(encoding='utf-8')).hexdigest(7), base=16)
+        else:
+            self.__deck_id = deck_id
         self.__deck_name = deck_name
         self.__note_builder = note_builder
+        self.__notes = notes
 
-    def note_builder(self) -> NoteBuilder:
-        return self.__note_builder
+    def set_notes(self, notes: list[dict]) -> Self:
+        self.__notes = notes
+        return self
 
-    @abstractmethod
-    def build_notes(self) -> [genanki.Note]:
-        pass
+    def build(self) -> genanki.Deck:
+        deck = genanki.Deck(self.__deck_id, self.__deck_name)
+        processed_notes: dict[int, genanki.Note] = {}
 
-    def build(self, collection: Path) -> None:
-        deck = genanki.Deck(self.__deck_id, self.__deck_name)  
+        for note in self.__notes:
+            built_note = self.__note_builder.build(note)
+            if built_note.guid in processed_notes.keys():
+                raise ValueError(f'Collision found for note "{built_note.fields}" with note "{processed_notes[built_note.guid].fields}"')
 
-        for note in self.build_notes():
-            deck.add_note(note)
+            deck.add_note(built_note)
+            processed_notes[built_note.guid] = built_note
 
-        genanki.Package([deck]).write_to_file(str(collection.name))
+        return deck
+
+    def build_and_persist(self, path: Path) -> None:
+        genanki.Package([self.build()]).write_to_file(str(path.name))
