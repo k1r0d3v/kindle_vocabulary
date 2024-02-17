@@ -8,7 +8,7 @@ import argparse
 import base64
 
 from anki_notes import NoteBuilder, DeckBuilder
-from vindex import VocabularyEntry, VocabularyIndex, VocabularyIndexBuilderFromCSV, VocabularyIndexBuilderFromVocabdb
+from vindex import VocabularyEntry, VocabularyIndexBuilderFromCSV, VocabularyIndexBuilderFromVocabdb
 from vindex_en_utils import PhrasalVerbsTransform, WordReferenceTranslator
 from vocabdb import Vocabdb
 
